@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ recipe.name }}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {% if recipe.image %}
+            <div class="col-md-3 my-3 mx-1">
+                <img src="{{ recipe.image.url }}" class="img-fluid rounded-start" alt="...">
+            </div>
+        {% endif %}
+        <div class="col-md-8 my-auto">
+            <h3 class="my-2">{{ recipe.name }}</h3>
+            <h5 class="card-text"><b>Категория:</b> <a
+                    href="{{ recipe.category.get_absolute_url }}">{{ recipe.category }}</a></h5>
+            <p><b> Ингредиенты:</b></p>
+            <ul class="list-group col-5 mb-4">
+                {% for ingredient in recipe.ingredient.all %}
+                    <li class="list-group-item"><a href="{{ ingredient.get_absolute_url }}"> {{ ingredient }}; </a></li>
+                {% endfor %}
+            </ul>
+            {% autoescape off %}
+                <h4>Способ приготовления:</h4>
+                <p>{{ recipe.recipe_text|linebreaks }}</p>
+            {% endautoescape %}
+        </div>
+    </div>
+{% endblock %}

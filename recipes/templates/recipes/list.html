@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if ingredient %}
+        {{ ingredient }}
+    {% elif query %}
+        Поиск: {{ query }}
+    {% else %}
+        Главная
+    {% endif %}
+{% endblock %}
+
+{#Заголовок#}
+{% block content %}
+    <h2 class="text-center my-3">Книга рецептов</h2>
+    {% if ingredient %}
+        <h3 class="text-center my-3">Ингредиент: {{ ingredient }}</h3>
+    {% elif query %}
+        <h3 class="text-center my-3">Поиск: {{ query }}</h3>
+    {% endif %}
+
+    {#Блок для информации по категории#}
+    {% block category %}{% endblock %}
+
+    {#Вывод рецептов#}
+    {% for recipe in recipes %}
+        <div class="row">
+            <div class="card my-3 mx-auto" style="max-width: 800px;">
+                <div class="row g-0">
+                    {% if recipe.image %}
+                        <div class="col-md-2 my-auto mx-1">
+                            <img src="{{ recipe.image.url }}" class="img-fluid rounded-start" alt="...">
+                        </div>
+                    {% endif %}
+                    <div class="col-md-9 mx-auto">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recipe.name }}</h5>
+                            <p class="card-text"><b>Категория:</b> <a
+                                    href="{{ recipe.category.get_absolute_url }}">{{ recipe.category }}</a></p>
+                            <p class="card-text"><b>Ингредиенты:</b>
+                                {% for ingredient in recipe.ingredient.all %}
+                                    <small><a href="{{ ingredient.get_absolute_url }}">{{ ingredient }}; </a></small>
+                                {% endfor %}
+                            </p>
+                            <a href="{{ recipe.get_absolute_url }}" class="btn btn-primary col-3">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    {#Пагинация#}
+    {% if recipes %}
+        <div class="row">
+            <div class="col mx-auto">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?q={{ query }}&order={{ order }}&page=1"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">First</span>
+                                </a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?q={{ query }}&order={{ order }}&page={{ page_obj.previous_page_number }}"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for page in paginator.page_range %}
+
+                            {% if page == page_obj.number %}
+                                <li class="page-item active">
+                                    <a class="page-link"
+                                       href="?q={{ query }}&order={{ order }}&page={{ page }}">
+                                        {{ page }}
+                                    </a>
+                                </li>
+                            {% elif page >= page_obj.number|add:-5 and page <= page_obj.number|add:5 %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       href="?q={{ query }}&order={{ order }}&page={{ page }}">
+                                        {{ page }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?q={{ query }}&order={{ order }}page={{ page_obj.next_page_number }}"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?q={{ query }}&order={{ order }}&page={{ paginator.num_pages }}"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">Last</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
