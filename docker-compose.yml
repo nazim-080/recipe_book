@@ -15,15 +15,10 @@ services:
     depends_on:
       - db
   db:
-    image: postgres:14-alpine
+    image: postgres:14
     volumes:
-      - ./data/db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - 5432:5432
+      - postgres_data:/var/lib/postgresql/data/
+    env_file: .env
 
 volumes:
   postgres_data:
